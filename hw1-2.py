@@ -7,8 +7,8 @@ datafile = 'data/ex1data2.txt'
 # Read into the data file
 cols = np.loadtxt(datafile,delimiter=',',usecols=(0,1,2),unpack=True) #Read in comma separated data
 # Form the usual "X" matrix and "y" vector
-X = np.transpose(np.array(cols[:-1]))
-y = np.transpose(np.array(cols[-1:]))
+X = np.transpose(np.array(cols[:-1])) # m rows n cols
+y = np.transpose(np.array(cols[-1:])) # m rows
 m = y.size # number of training examples
 # Insert the usual column of 1's into the "X" matrix
 X = np.insert(X,0,1,axis=1)
@@ -23,10 +23,11 @@ plt.title('Clearly we need feature normalization.')
 plt.xlabel('Column Value')
 plt.ylabel('Counts')
 dummy = plt.legend()
+plt.show()
 
 
 
-# Feature normalizing the columns (subtract mean, divide by standard deviation)
+# Feature normalizing the columns (subtract mean, divide by standard deviation) feature scaling
 # Store the mean and std for later use
 # Note don't modify the original X matrix, use a copy
 stored_feature_means, stored_feature_stds = [], []
@@ -35,7 +36,7 @@ for icol in xrange(Xnorm.shape[1]):
     stored_feature_means.append(np.mean(Xnorm[:,icol]))
     stored_feature_stds.append(np.std(Xnorm[:,icol]))
     #Skip the first column
-    if not icol: continue
+    if icol == 0: continue
     #Faster to not recompute the mean and std again, just used stored values
     Xnorm[:,icol] = (Xnorm[:,icol] - stored_feature_means[-1])/stored_feature_stds[-1]
 
@@ -51,7 +52,7 @@ plt.title('Feature Normalization Accomplished')
 plt.xlabel('Column Value')
 plt.ylabel('Counts')
 dummy = plt.legend()
-# plt.show()
+plt.show()
 
 
 # Gradient Descent
@@ -61,7 +62,7 @@ alpha = 0.01
 
 def h(theta,X): # Linear hypothesis function
 
-    return np.dot(X, theta) # diancheng
+    return np.dot(X, theta)
 
 
 def compute_cost(mytheta, X, y): # Cost function
@@ -71,10 +72,10 @@ def compute_cost(mytheta, X, y): # Cost function
     y is a matrix with m- rows and 1 column
     """
     # note to self: *.shape is (rows, columns)
-    inner = np.power((h(mytheta, X) - y), 2)
-    return np.sum(inner) / (2 * m)
+    # inner = np.power((h(mytheta, X) - y), 2)
+    # return np.sum(inner) / (2 * m)
 
-    # return float((1./(2*m)) * np.dot((h(mytheta,X)-y).T, (h(mytheta,X)-y)))
+    return float((1/(2*m)) * np.dot((h(mytheta,X)-y).T, (h(mytheta,X)-y)))
 
 
 # Actual gradient descent minimizing routine
@@ -92,7 +93,8 @@ def descend_gradient(X, theta_start = np.zeros(2)):
         thetahistory.append(list(theta[:,0]))
         # Simultaneously updating theta values
         for j in xrange(len(tmptheta)):
-            tmptheta[j] = theta[j] - (alpha/m)*np.sum((h(initial_theta,X) - y)*np.array(X[:,j]).reshape(m,1))
+            # tmptheta[j] = theta[j] - (alpha/m)*np.sum((h(initial_theta,X) - y)*np.array(X[:,j]).reshape(m,1))
+            tmptheta[j] = theta[j] - (alpha / m) * np.dot((h(theta, X) - y).T, np.array(X[:, j]).reshape(m, 1))
         theta = tmptheta
         # theta = theta - (alpha/m)*np.sum(h(initial_theta, X)*X)
     return theta, thetahistory, jvec
@@ -106,8 +108,8 @@ def plot_convergence(jvec):
     plt.title("Convergence of Cost Function")
     plt.xlabel("Iteration number")
     plt.ylabel("Cost function")
-    dummy = plt.xlim([-0.05*iterations,1.05*iterations])
-    #dummy = plt.ylim([4,8])
+    plt.xlim([-0.05*iterations,1.05*iterations])
+    # plt.ylim([min(jvec),max(jvec)])
 
 
 # Run gradient descent with multiple variables, initial theta still set to zeros
@@ -116,7 +118,8 @@ initial_theta = np.zeros((Xnorm.shape[1],1))
 theta, thetahistory, jvec = descend_gradient(Xnorm,initial_theta)
 
 # Plot convergence of cost function:
-plot_convergence(jvec)
+# plot_convergence(jvec)
+# plt.show()
 
 
 # print "Final result theta parameters: \n",theta

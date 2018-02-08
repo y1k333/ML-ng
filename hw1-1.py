@@ -1,4 +1,6 @@
-# %matplotlib inline
+# linear regression with one variable
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -37,10 +39,9 @@ def compute_cost(mytheta, X, y): # Cost function
     y is a matrix with m- rows and 1 column
     """
     # note to self: *.shape is (rows, columns)
-    inner = np.power((h(mytheta, X) - y), 2)
-    return np.sum(inner) / (2 * m)
-
-    # return float((1./(2*m)) * np.dot((h(mytheta,X)-y).T, (h(mytheta,X)-y)))
+    # inner = np.power((h(mytheta, X) - y), 2)
+    # return np.sum(inner) / (2 * m)
+    return float(np.dot(((h(mytheta,X)-y).T),(h(mytheta,X)-y)) / (2 * m))
 
 
 # Test that running computeCost with 0's as theta returns 32.07:
@@ -56,7 +57,7 @@ print compute_cost(initial_theta, X, y)
 def descend_gradient(X, theta_start = np.zeros(2)):
     """
     theta_start is an n- dimensional vector of initial theta guess
-    X is matrix with n- columns and m- rows
+    X is matrix with m- rows and n- columns
     """
     theta = theta_start
     jvec = [] # Used to plot cost as function of iteration
@@ -67,7 +68,8 @@ def descend_gradient(X, theta_start = np.zeros(2)):
         thetahistory.append(list(theta[:,0]))
         # Simultaneously updating theta values
         for j in xrange(len(tmptheta)):
-            tmptheta[j] = theta[j] - (alpha/m)*np.sum((h(initial_theta,X) - y)*np.array(X[:,j]).reshape(m,1))
+            # tmptheta[j] = theta[j] - (alpha/m)*np.sum((h(theta,X) - y)*np.array(X[:,j]).reshape(m,1))
+            tmptheta[j] = theta[j] - (alpha / m) * np.dot((h(theta, X) - y).T, np.array(X[:, j]).reshape(m, 1))
         theta = tmptheta
         # theta = theta - (alpha/m)*np.sum(h(initial_theta, X)*X)
     return theta, thetahistory, jvec
@@ -106,7 +108,7 @@ plt.legend()
 plt.show()
 
 # visualizling J(cita)
-#Import necessary matplotlib tools for 3d plots
+# Import necessary matplotlib tools for 3d plots
 
 from mpl_toolkits.mplot3d import axes3d, Axes3D
 from matplotlib import cm
